@@ -11,7 +11,6 @@ import java.sql.Statement;
 
 public class SQLRunner {
 
-
     public static void runTableCreationScript(String DB_URL, String USER, String PASSWORD, String TABLES_SCRIPT_FILE) {
         try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
 
