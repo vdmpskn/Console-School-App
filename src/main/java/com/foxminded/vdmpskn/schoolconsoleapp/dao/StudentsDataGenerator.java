@@ -1,0 +1,68 @@
+package com.foxminded.vdmpskn.schoolconsoleapp.dao;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class StudentsDataGenerator {
+    private static final String[] FIRST_NAMES = {"John", "Emma", "Michael", "Sophia", "William", "Olivia", "James", "Ava", "Oliver", "Isabella",
+            "Benjamin", "Mia", "Lucas", "Charlotte", "Henry", "Amelia", "Alexander", "Harper", "Daniel", "Evelyn"};
+    private static final String[] LAST_NAMES = {"Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor",
+            "Anderson", "Thomas", "Jackson", "White", "Harris", "Martin", "Thompson", "Garcia", "Martinez", "Clark"};
+
+    public static void generateStudents(Connection connection) throws SQLException {
+        String sql = "INSERT INTO students (group_id, first_name, last_name) VALUES (?, ?, ?)";
+        Random random = new Random();
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            List<Integer> groupIds = getGroupIds(connection);
+
+            if (groupIds.isEmpty()) {
+                throw new IllegalStateException("No group IDs available. Insert group records into the 'groups' table.");
+            }
+
+            for (int i = 0; i < 200; i++) {
+                int groupId = getRandomGroupId(groupIds, random);
+                String firstName = FIRST_NAMES[random.nextInt(FIRST_NAMES.length)];
+                String lastName = LAST_NAMES[random.nextInt(LAST_NAMES.length)];
+
+                statement.setInt(1, groupId);
+                statement.setString(2, firstName);
+                statement.setString(3, lastName);
+                statement.addBatch();
+            }
+
+            statement.executeBatch();
+            System.out.println("Students generated successfully.");
+        }
+    }
+
+
+    private static List<Integer> getGroupIds(Connection connection) throws SQLException {
+        List<Integer> groupIds = new ArrayList<>();
+
+        String sql = "SELECT group_id FROM groups";
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+            while (resultSet.next()) {
+                int groupId = resultSet.getInt("group_id");
+                groupIds.add(groupId);
+            }
+        }
+
+        return groupIds;
+    }
+
+    private static int getRandomGroupId(List<Integer> groupIds, Random random) {
+        if (groupIds.isEmpty()) {
+            throw new IllegalStateException("No group IDs available.");
+        }
+        int randomIndex = random.nextInt(groupIds.size());
+        return groupIds.get(randomIndex);
+    }
+
+}
+
+
+

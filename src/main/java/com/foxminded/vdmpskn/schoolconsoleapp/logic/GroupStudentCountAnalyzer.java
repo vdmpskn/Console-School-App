@@ -1,11 +1,11 @@
-package com.foxminded.vdmpskn.schoolconsoleapp;
+package com.foxminded.vdmpskn.schoolconsoleapp.logic;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class GroupMaxStudentFinder {
+public class GroupStudentCountAnalyzer {
 
     public static void findGroupsWithMaxStudents(Connection connection, int maxStudents) throws SQLException {
         String sql = "SELECT groups.group_id, groups.group_name, COUNT(students.student_id) AS student_count "

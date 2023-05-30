@@ -1,4 +1,4 @@
-package com.foxminded.vdmpskn.schoolconsoleapp;
+package com.foxminded.vdmpskn.schoolconsoleapp.config;
 
 import java.sql.*;
 import java.util.HashSet;
@@ -7,8 +7,8 @@ import java.util.Set;
 
 public class StudentsToCourseAssigner {
 
-    public static void assignCoursesToStudents(String DB_URL, String USER, String PASSWORD) {
-        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+    public static void assignCoursesToStudents(Connection connection) {
+        try {
             Random random = new Random();
 
             String selectStudentsSQL = "SELECT student_id FROM students";

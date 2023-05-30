@@ -1,15 +1,19 @@
-package com.foxminded.vdmpskn.schoolconsoleapp;
+package com.foxminded.vdmpskn.schoolconsoleapp.config;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.ArrayList;
 
 public class StudentsToGroupAssigner {
 
-    public static void assignStudentsToGroups(String DB_URL, String USER, String PASSWORD) throws SQLException {
+    public static void assignStudentsToGroups(Connection connection){
 
-        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+        try  {
             String selectStudentsQuery = "SELECT student_id FROM students";
             PreparedStatement selectStudentsStatement = connection.prepareStatement(selectStudentsQuery);
             Random random = new Random();
@@ -55,5 +59,6 @@ public class StudentsToGroupAssigner {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 }

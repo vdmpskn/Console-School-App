@@ -1,19 +1,18 @@
-package com.foxminded.vdmpskn.schoolconsoleapp;
+package com.foxminded.vdmpskn.schoolconsoleapp.dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class DataTest {
+public class GroupDataGenerator {
     private static final int NUM_GROUPS = 10;
 
-    public static void generateAndInsertGroups(String DB_URL, String USER, String PASSWORD) throws SQLException{
+    public static void generateAndInsertGroups(Connection connection) throws SQLException{
 
-    try(Connection connection = DriverManager.getConnection(DB_URL, USER, PASSWORD)){
+    try{
         System.out.println("Connected to the database");
 
         generateRandom(connection);

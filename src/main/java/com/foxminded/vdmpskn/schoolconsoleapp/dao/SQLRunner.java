@@ -1,4 +1,4 @@
-package com.foxminded.vdmpskn.schoolconsoleapp;
+package com.foxminded.vdmpskn.schoolconsoleapp.dao;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -11,11 +11,9 @@ import java.sql.Statement;
 
 public class SQLRunner {
 
-    public static void runTableCreationScript(String DB_URL, String USER, String PASSWORD, String TABLES_SCRIPT_FILE) {
-        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+    public static void runTableCreationScript(Connection connection, String TABLES_SCRIPT_FILE) throws SQLException {
 
             boolean tablesExist = checkTablesExist(connection);
-
             if (tablesExist) {
                 dropTables(connection);
                 System.out.println("Existing tables dropped.");
@@ -23,11 +21,9 @@ public class SQLRunner {
 
             String script = readScriptFile(TABLES_SCRIPT_FILE);
             executeScript(connection, script);
-
             System.out.println("Table creation script executed successfully.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+
     }
 
     public static boolean checkTablesExist(Connection connection) throws SQLException {
@@ -63,9 +59,10 @@ public class SQLRunner {
         Statement statement = null;
         try {
             statement = connection.createStatement();
-            statement.executeUpdate("DROP TABLE IF EXISTS students");
-            statement.executeUpdate("DROP TABLE IF EXISTS courses");
-            statement.executeUpdate("DROP TABLE IF EXISTS groups");
+            statement.executeUpdate("DROP TABLE IF EXISTS students CASCADE");
+            statement.executeUpdate("DROP TABLE IF EXISTS courses CASCADE");
+            statement.executeUpdate("DROP TABLE IF EXISTS groups CASCADE");
+            statement.executeUpdate("DROP TABLE IF EXISTS student_courses CASCADE");
         } finally {
             if (statement != null) {
                 try {

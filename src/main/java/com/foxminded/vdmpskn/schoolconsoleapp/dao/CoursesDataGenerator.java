@@ -1,14 +1,13 @@
-package com.foxminded.vdmpskn.schoolconsoleapp;
+package com.foxminded.vdmpskn.schoolconsoleapp.dao;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CoursesCreator {
+public class CoursesDataGenerator {
 
-    public static void createCourse(String DB_URL, String USER, String PASSWORD) throws SQLException{
-        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+    public static void createCourse(Connection connection) throws SQLException{
+        try {
             System.out.println("Connected to the database");
 
             addCourses(connection);
@@ -64,6 +63,22 @@ public class CoursesCreator {
             statement.executeBatch();
             System.out.println("Courses created successfully.");
         }
+    }
+    public static List<String> getAllCourseNames(Connection connection) throws SQLException {
+        List<String> courseNames = new ArrayList<>();
+
+        String sql = "SELECT course_name FROM courses";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                String courseName = resultSet.getString("course_name");
+                courseNames.add(courseName);
+            }
+        }
+
+        return courseNames;
     }
 
 }
