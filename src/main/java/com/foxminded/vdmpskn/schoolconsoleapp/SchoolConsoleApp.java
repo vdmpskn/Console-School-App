@@ -11,7 +11,7 @@ import com.foxminded.vdmpskn.schoolconsoleapp.dao.StudentsDataGenerator;
 import java.sql.*;
 
 
-public class Main {
+public class SchoolConsoleApp {
    private static final String DB_URL = "jdbc:postgresql://localhost:5432/schooldb";
     private static final String USER = "admin";
     private static final String PASSWORD = "1111";
