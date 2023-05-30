@@ -12,9 +12,9 @@ public class StudentsDataGenerator {
     private static final Log log = LogFactory.getLog(StudentsDataGenerator.class);
     static DatabaseConnector connector = new DatabaseConnector();
 
-    private static final String[] FIRST_NAMES = {"John", "Emma", "Michael", "Sophia", "William", "Olivia", "James", "Ava", "Oliver", "Isabella",
+    public static final String[] FIRST_NAMES = {"John", "Emma", "Michael", "Sophia", "William", "Olivia", "James", "Ava", "Oliver", "Isabella",
             "Benjamin", "Mia", "Lucas", "Charlotte", "Henry", "Amelia", "Alexander", "Harper", "Daniel", "Evelyn"};
-    private static final String[] LAST_NAMES = {"Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor",
+    public static final String[] LAST_NAMES = {"Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor",
             "Anderson", "Thomas", "Jackson", "White", "Harris", "Martin", "Thompson", "Garcia", "Martinez", "Clark"};
 
     public static void generateStudents() throws SQLException {
@@ -47,7 +47,7 @@ public class StudentsDataGenerator {
         }
     }
 
-    private static List<Integer> getGroupIds() throws SQLException {
+    public static List<Integer> getGroupIds() throws SQLException {
         List<Integer> groupIds = new ArrayList<>();
         Connection connection = connector.getConnection();
 
@@ -63,7 +63,7 @@ public class StudentsDataGenerator {
         return groupIds;
     }
 
-    private static int getRandomGroupId(List<Integer> groupIds, Random random) {
+    public static int getRandomGroupId(List<Integer> groupIds, Random random) {
         if (groupIds.isEmpty()) {
             log.fatal("No group IDs available");
             throw new IllegalStateException();

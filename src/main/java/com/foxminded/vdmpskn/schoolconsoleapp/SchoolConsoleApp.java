@@ -19,12 +19,12 @@ public class SchoolConsoleApp {
 
         log.info("Connected to the database");
         SQLRunner.runTableCreationScript(TABLES_SCRIPT_FILE);//SQL script with table creation from previously created files
-        GroupDataGenerator.generateAndInsertGroups();//10 groups with randomly generated names.
-        CoursesDataGenerator.createCourse(); //Create 10 courses (math, biology, etc)
-        StudentsDataGenerator.generateStudents();//200 students
-        StudentsToGroupAssigner.assignStudentsToGroups(); //Randomly assign students to groups.
-        StudentsToCourseAssigner.assignCoursesToStudents();//Create the MANY-TO-MANY relation  between STUDENTS and COURSES tables
-        ConsoleMenu.getConsole(); // Console-Menu
+//        GroupDataGenerator.generateAndInsertGroups();//10 groups with randomly generated names.
+       //CoursesDataGenerator.createCourse(); //Create 10 courses (math, biology, etc)
+//        StudentsDataGenerator.generateStudents();//200 students
+//        StudentsToGroupAssigner.assignStudentsToGroups(); //Randomly assign students to groups.
+//        StudentsToCourseAssigner.assignCoursesToStudents();//Create the MANY-TO-MANY relation  between STUDENTS and COURSES tables
+//        ConsoleMenu.getConsole(); // Console-Menu
 
     }
 
