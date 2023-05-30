@@ -4,24 +4,27 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 public class SQLRunner {
+    private static final Log log = LogFactory.getLog(SQLRunner.class);
 
     public static void runTableCreationScript(Connection connection, String TABLES_SCRIPT_FILE) throws SQLException {
 
             boolean tablesExist = checkTablesExist(connection);
             if (tablesExist) {
                 dropTables(connection);
-                System.out.println("Existing tables dropped.");
+                log.info("Existing tables dropped.");
             }
 
             String script = readScriptFile(TABLES_SCRIPT_FILE);
             executeScript(connection, script);
-            System.out.println("Table creation script executed successfully.");
+            log.info("Table creation script executed successfully.");
 
 
     }

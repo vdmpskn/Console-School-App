@@ -4,8 +4,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class StudentsDataGenerator {
+    private static final Log log = LogFactory.getLog(StudentsDataGenerator.class);
+
     private static final String[] FIRST_NAMES = {"John", "Emma", "Michael", "Sophia", "William", "Olivia", "James", "Ava", "Oliver", "Isabella",
             "Benjamin", "Mia", "Lucas", "Charlotte", "Henry", "Amelia", "Alexander", "Harper", "Daniel", "Evelyn"};
     private static final String[] LAST_NAMES = {"Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor",
@@ -19,7 +23,8 @@ public class StudentsDataGenerator {
             List<Integer> groupIds = getGroupIds(connection);
 
             if (groupIds.isEmpty()) {
-                throw new IllegalStateException("No group IDs available. Insert group records into the 'groups' table.");
+                log.fatal("No group IDs available. Insert group records into the 'groups' table.");
+                throw new IllegalStateException();
             }
 
             for (int i = 0; i < 200; i++) {
@@ -34,7 +39,7 @@ public class StudentsDataGenerator {
             }
 
             statement.executeBatch();
-            System.out.println("Students generated successfully.");
+            log.info("Students generated successfully.");
         }
     }
 
@@ -56,7 +61,8 @@ public class StudentsDataGenerator {
 
     private static int getRandomGroupId(List<Integer> groupIds, Random random) {
         if (groupIds.isEmpty()) {
-            throw new IllegalStateException("No group IDs available.");
+            log.fatal("No group IDs available");
+            throw new IllegalStateException();
         }
         int randomIndex = random.nextInt(groupIds.size());
         return groupIds.get(randomIndex);

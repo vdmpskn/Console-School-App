@@ -2,27 +2,25 @@ package com.foxminded.vdmpskn.schoolconsoleapp;
 
 import com.foxminded.vdmpskn.schoolconsoleapp.config.StudentsToCourseAssigner;
 import com.foxminded.vdmpskn.schoolconsoleapp.config.StudentsToGroupAssigner;
-import com.foxminded.vdmpskn.schoolconsoleapp.dao.SQLRunner;
+import com.foxminded.vdmpskn.schoolconsoleapp.dao.*;
 import com.foxminded.vdmpskn.schoolconsoleapp.front.ConsoleMenu;
-import com.foxminded.vdmpskn.schoolconsoleapp.dao.CoursesDataGenerator;
-import com.foxminded.vdmpskn.schoolconsoleapp.dao.GroupDataGenerator;
-import com.foxminded.vdmpskn.schoolconsoleapp.dao.StudentsDataGenerator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 import java.sql.*;
 
 
 public class SchoolConsoleApp {
-   private static final String DB_URL = "jdbc:postgresql://localhost:5432/schooldb";
-    private static final String USER = "admin";
-    private static final String PASSWORD = "1111";
     private static final String TABLES_SCRIPT_FILE = "src/main/resources/create_tables.sql";
-
+    private static final Log log = LogFactory.getLog(SchoolConsoleApp.class);
 
     public static void main(String[] args) throws SQLException {
+        DatabaseConnector connector = new DatabaseConnector();
 
-        try (Connection connection = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+        try (Connection connection = connector.getConnection()) {
 
-            System.out.println("Connected to the database");
+            log.info("Connected to the database");
 
             SQLRunner.runTableCreationScript(connection, TABLES_SCRIPT_FILE);//SQL script with table creation from previously created files
 

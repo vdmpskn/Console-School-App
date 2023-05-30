@@ -3,13 +3,13 @@ package com.foxminded.vdmpskn.schoolconsoleapp.dao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class CoursesDataGenerator {
-
+    private static final Log log = LogFactory.getLog(CoursesDataGenerator.class);
     public static void createCourse(Connection connection) throws SQLException{
         try {
-            System.out.println("Connected to the database");
-
             addCourses(connection);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -61,7 +61,7 @@ public class CoursesDataGenerator {
             statement.addBatch();
 
             statement.executeBatch();
-            System.out.println("Courses created successfully.");
+            log.info("Courses created successfully.");
         }
     }
     public static List<String> getAllCourseNames(Connection connection) throws SQLException {

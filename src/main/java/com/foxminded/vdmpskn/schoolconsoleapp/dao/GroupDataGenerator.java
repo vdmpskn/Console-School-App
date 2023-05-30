@@ -1,20 +1,23 @@
 package com.foxminded.vdmpskn.schoolconsoleapp.dao;
 
+import org.apache.commons.logging.LogFactory;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class GroupDataGenerator {
     private static final int NUM_GROUPS = 10;
+    private static final Log log = LogFactory.getLog(GroupDataGenerator.class);
 
     public static void generateAndInsertGroups(Connection connection) throws SQLException{
 
     try{
-        System.out.println("Connected to the database");
-
         generateRandom(connection);
     } catch (SQLException e){
         e.printStackTrace();
@@ -32,7 +35,7 @@ public static void generateRandom(Connection connection) throws SQLException{
             statement.addBatch();
         }
         statement.executeBatch();
-        System.out.println("Group Data inserted succeflully");
+        log.info("Group Data inserted succeflully");
     }
 }
 

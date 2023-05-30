@@ -8,8 +8,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class StudentsToGroupAssigner {
+    private static final Log log = LogFactory.getLog(StudentsToGroupAssigner.class);
 
     public static void assignStudentsToGroups(Connection connection){
 
@@ -55,7 +58,7 @@ public class StudentsToGroupAssigner {
                 updateStudentsStatement.executeUpdate();
             }
 
-            System.out.println("Students assigned to groups successfully.");
+            log.info("Students assigned to groups successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
         }

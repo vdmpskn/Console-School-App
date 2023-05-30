@@ -21,7 +21,6 @@ public class ConsoleMenu {
     public static void getConsole(Connection connection){
 
         try {
-            System.out.println("Connected to the database");
 
             Scanner scanner = new Scanner(System.in);
             boolean running = true;
@@ -117,7 +116,6 @@ public class ConsoleMenu {
                             System.out.println("No courses found for the student.");
                         }
                         break;
-
                     case 7:
                         running = false;
                         break;

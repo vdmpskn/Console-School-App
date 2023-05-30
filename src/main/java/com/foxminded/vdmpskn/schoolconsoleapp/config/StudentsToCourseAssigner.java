@@ -4,8 +4,11 @@ import java.sql.*;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class StudentsToCourseAssigner {
+    public static final Log log = LogFactory.getLog(StudentsToCourseAssigner.class);
 
     public static void assignCoursesToStudents(Connection connection) {
         try {
@@ -45,7 +48,7 @@ public class StudentsToCourseAssigner {
                 }
             }
 
-            System.out.println("Courses assigned to students successfully.");
+            log.info("Courses assigned to students successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
