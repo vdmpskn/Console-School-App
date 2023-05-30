@@ -7,7 +7,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class CourseManager {
+    public static final Log log = LogFactory.getLog(CourseManager.class);
 
     public static void addStudentToCourse(Connection connection, int studentId, int courseId) throws SQLException {
         String addStudentToCourseQuery = "INSERT INTO student_courses (student_id, course_id) VALUES (?, ?)";
@@ -18,17 +22,11 @@ public class CourseManager {
             if (rowsAffected > 0) {
                 System.out.println("Student added to the course successfully.");
             } else {
-                System.out.println("Failed to add student to the course.");
+                log.info("Failed to add student to the course.");
             }
         }
     }
 
-    public static void printAvailableCourses(List<String> courses) {
-        System.out.println("Available Courses:");
-        for (int i = 0; i < courses.size(); i++) {
-            System.out.println((i + 1) + ". " + courses.get(i));
-        }
-    }
     public static List<String> getStudentCourses(Connection connection, int studentId) throws SQLException {
         List<String> courseNames = new ArrayList<>();
 

@@ -7,29 +7,30 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 
 public class SQLRunner {
     private static final Log log = LogFactory.getLog(SQLRunner.class);
-
-    public static void runTableCreationScript(Connection connection, String TABLES_SCRIPT_FILE) throws SQLException {
-
-            boolean tablesExist = checkTablesExist(connection);
-            if (tablesExist) {
-                dropTables(connection);
-                log.info("Existing tables dropped.");
-            }
-
-            String script = readScriptFile(TABLES_SCRIPT_FILE);
-            executeScript(connection, script);
-            log.info("Table creation script executed successfully.");
+    static DatabaseConnector connector = new DatabaseConnector();
 
 
+    public static void runTableCreationScript(String TABLES_SCRIPT_FILE) throws SQLException {
+        boolean tablesExist = checkTablesExist();
+        if (tablesExist) {
+            dropTables();
+            log.info("Existing tables dropped.");
+        }
+
+        String script = readScriptFile(TABLES_SCRIPT_FILE);
+        executeScript(script);
+        log.info("Table creation script executed successfully.");
     }
 
-    public static boolean checkTablesExist(Connection connection) throws SQLException {
+    public static boolean checkTablesExist() throws SQLException {
+        Connection connection = connector.getConnection();
         String query = "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'groups')";
         Statement statement = null;
         ResultSet resultSet = null;
@@ -58,8 +59,9 @@ public class SQLRunner {
         return false;
     }
 
-    public static void dropTables(Connection connection) throws SQLException {
+    public static void dropTables() throws SQLException {
         Statement statement = null;
+        Connection connection = connector.getConnection();
         try {
             statement = connection.createStatement();
             statement.executeUpdate("DROP TABLE IF EXISTS students CASCADE");
@@ -101,7 +103,8 @@ public class SQLRunner {
         return script.toString();
     }
 
-    public static void executeScript(Connection connection, String script) throws SQLException {
+    public static void executeScript(String script) throws SQLException {
+        Connection connection = connector.getConnection();
         Statement statement = null;
         try {
             statement = connection.createStatement();

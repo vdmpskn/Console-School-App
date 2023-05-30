@@ -1,6 +1,7 @@
 package com.foxminded.vdmpskn.schoolconsoleapp.front;
 
 import com.foxminded.vdmpskn.schoolconsoleapp.dao.CoursesDataGenerator;
+import com.foxminded.vdmpskn.schoolconsoleapp.dao.DatabaseConnector;
 import com.foxminded.vdmpskn.schoolconsoleapp.manage.CourseManager;
 import com.foxminded.vdmpskn.schoolconsoleapp.manage.StudentManager;
 
@@ -13,15 +14,12 @@ import static com.foxminded.vdmpskn.schoolconsoleapp.logic.GroupStudentCountAnal
 import static com.foxminded.vdmpskn.schoolconsoleapp.logic.CourseEnrollmentAnalyzer.findStudentsByCourseName;
 
 public class ConsoleMenu {
-    private static List<String> courseList;
+    static DatabaseConnector connector = new DatabaseConnector();
 
-    public ConsoleMenu(List<String> courseList) {
-        this.courseList = courseList;
-    }
-    public static void getConsole(Connection connection){
+    public static void getConsole() {
 
         try {
-
+            Connection connection = connector.getConnection();
             Scanner scanner = new Scanner(System.in);
             boolean running = true;
 
@@ -72,7 +70,7 @@ public class ConsoleMenu {
                     case 4:
                         System.out.println("=== Delete Student ===");
                         System.out.print("Enter students' ID: ");
-                        int studentId  = scanner.nextInt();
+                        int studentId = scanner.nextInt();
                         StudentManager.deleteStudent(connection, studentId);
                         break;
                     case 5:
@@ -81,7 +79,7 @@ public class ConsoleMenu {
                         studentId = scanner.nextInt();
                         scanner.nextLine();
 
-                        List<String> courseNames = CoursesDataGenerator.getAllCourseNames(connection);
+                        List<String> courseNames = CoursesDataGenerator.getAllCourseNames();
 
                         if (courseNames != null && !courseNames.isEmpty()) {
                             for (int i = 0; i < courseNames.size(); i++) {
@@ -129,5 +127,5 @@ public class ConsoleMenu {
             e.printStackTrace();
         }
     }
-    }
+}
 

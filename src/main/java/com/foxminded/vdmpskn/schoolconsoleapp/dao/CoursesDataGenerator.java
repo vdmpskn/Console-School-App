@@ -3,21 +3,26 @@ package com.foxminded.vdmpskn.schoolconsoleapp.dao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class CoursesDataGenerator {
+    static DatabaseConnector connector = new DatabaseConnector();
     private static final Log log = LogFactory.getLog(CoursesDataGenerator.class);
-    public static void createCourse(Connection connection) throws SQLException{
+
+    public static void createCourse() throws SQLException {
         try {
-            addCourses(connection);
+            addCourses();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public static void addCourses(Connection connection) throws SQLException {
+    public static void addCourses() throws SQLException {
         String sql = "INSERT INTO courses (course_name, course_description) VALUES (?, ?)";
+
+        Connection connection = connector.getConnection();
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, "Math");
@@ -64,7 +69,9 @@ public class CoursesDataGenerator {
             log.info("Courses created successfully.");
         }
     }
-    public static List<String> getAllCourseNames(Connection connection) throws SQLException {
+
+    public static List<String> getAllCourseNames() throws SQLException {
+        Connection connection = connector.getConnection();
         List<String> courseNames = new ArrayList<>();
 
         String sql = "SELECT course_name FROM courses";

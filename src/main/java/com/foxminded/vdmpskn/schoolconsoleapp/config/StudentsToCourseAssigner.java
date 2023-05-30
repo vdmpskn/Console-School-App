@@ -4,14 +4,19 @@ import java.sql.*;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+
+import com.foxminded.vdmpskn.schoolconsoleapp.dao.DatabaseConnector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class StudentsToCourseAssigner {
     public static final Log log = LogFactory.getLog(StudentsToCourseAssigner.class);
 
-    public static void assignCoursesToStudents(Connection connection) {
+    public static void assignCoursesToStudents() {
+        DatabaseConnector connector = new DatabaseConnector();
+
         try {
+            Connection connection = connector.getConnection();
             Random random = new Random();
 
             String selectStudentsSQL = "SELECT student_id FROM students";

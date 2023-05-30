@@ -1,22 +1,25 @@
 package com.foxminded.vdmpskn.schoolconsoleapp.config;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import com.foxminded.vdmpskn.schoolconsoleapp.dao.DatabaseConnector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class StudentsToGroupAssigner {
     private static final Log log = LogFactory.getLog(StudentsToGroupAssigner.class);
 
-    public static void assignStudentsToGroups(Connection connection){
+    public static void assignStudentsToGroups() {
+        DatabaseConnector connector = new DatabaseConnector();
 
-        try  {
+        try {
+            Connection connection = connector.getConnection();
             String selectStudentsQuery = "SELECT student_id FROM students";
             PreparedStatement selectStudentsStatement = connection.prepareStatement(selectStudentsQuery);
             Random random = new Random();

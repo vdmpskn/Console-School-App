@@ -4,23 +4,27 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class StudentsDataGenerator {
     private static final Log log = LogFactory.getLog(StudentsDataGenerator.class);
+    static DatabaseConnector connector = new DatabaseConnector();
 
     private static final String[] FIRST_NAMES = {"John", "Emma", "Michael", "Sophia", "William", "Olivia", "James", "Ava", "Oliver", "Isabella",
             "Benjamin", "Mia", "Lucas", "Charlotte", "Henry", "Amelia", "Alexander", "Harper", "Daniel", "Evelyn"};
     private static final String[] LAST_NAMES = {"Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor",
             "Anderson", "Thomas", "Jackson", "White", "Harris", "Martin", "Thompson", "Garcia", "Martinez", "Clark"};
 
-    public static void generateStudents(Connection connection) throws SQLException {
+    public static void generateStudents() throws SQLException {
+
         String sql = "INSERT INTO students (group_id, first_name, last_name) VALUES (?, ?, ?)";
         Random random = new Random();
+        Connection connection = connector.getConnection();
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            List<Integer> groupIds = getGroupIds(connection);
+            List<Integer> groupIds = getGroupIds();
 
             if (groupIds.isEmpty()) {
                 log.fatal("No group IDs available. Insert group records into the 'groups' table.");
@@ -43,9 +47,9 @@ public class StudentsDataGenerator {
         }
     }
 
-
-    private static List<Integer> getGroupIds(Connection connection) throws SQLException {
+    private static List<Integer> getGroupIds() throws SQLException {
         List<Integer> groupIds = new ArrayList<>();
+        Connection connection = connector.getConnection();
 
         String sql = "SELECT group_id FROM groups";
         try (Statement statement = connection.createStatement();
@@ -67,7 +71,6 @@ public class StudentsDataGenerator {
         int randomIndex = random.nextInt(groupIds.size());
         return groupIds.get(randomIndex);
     }
-
 }
 
 
