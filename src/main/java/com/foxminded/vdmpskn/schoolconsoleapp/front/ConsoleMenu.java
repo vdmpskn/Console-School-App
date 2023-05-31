@@ -45,7 +45,7 @@ public class ConsoleMenu {
                         System.out.print("Enter maximum number of students: ");
                         int maxStudents = scanner.nextInt();
                         scanner.nextLine();
-                        GroupStudentCountAnalyzer groupStudentCountAnalyzer = new GroupStudentCountAnalyzer();
+                        GroupStudentCountAnalyzer groupStudentCountAnalyzer = new GroupStudentCountAnalyzer(connector);
                         groupStudentCountAnalyzer.findGroupsWithMaxStudents(maxStudents);
                         break;
                     case 2:
@@ -68,14 +68,15 @@ public class ConsoleMenu {
                         String firstName = scanner.nextLine();
                         System.out.print("Enter last name: ");
                         String lastName = scanner.nextLine();
-                        StudentManager.addNewStudent(connection, firstName, lastName);
+                        StudentManager studentManager = new StudentManager(connector);
+                        studentManager.addNewStudent(firstName, lastName);
                         break;
                     case 4:
                         System.out.println("=== Delete Student ===");
                         System.out.print("Enter students' ID: ");
                         int studentId = scanner.nextInt();
-                        StudentManager studentManager = new StudentManager();
-                        studentManager.deleteStudent(connection, studentId);
+                        StudentManager studentManager1 = new StudentManager(connector);
+                        studentManager1.deleteStudent(studentId);
                         break;
                     case 5:
                         System.out.println("=== Add Student to Course ===");
@@ -94,8 +95,8 @@ public class ConsoleMenu {
                             System.out.print("Enter course ID to add the student: ");
                             int courseId = scanner.nextInt();
                             scanner.nextLine();
-                            CourseManager courseManager = new CourseManager();
-                            courseManager.addStudentToCourse(connection, studentId, courseId);
+                            CourseManager courseManager = new CourseManager(connector);
+                            courseManager.addStudentToCourse(studentId, courseId);
                         } else {
                             System.out.println("No available courses found.");
                         }
@@ -105,8 +106,8 @@ public class ConsoleMenu {
                         System.out.print("Enter student ID: ");
                         studentId = scanner.nextInt();
                         scanner.nextLine();
-                        CourseManager courseManager = new CourseManager();
-                        List<String> studentCourses = courseManager.getStudentCourses(connection, studentId);
+                        CourseManager courseManager = new CourseManager(connector);
+                        List<String> studentCourses = courseManager.getStudentCourses(studentId);
 
                         if (studentCourses != null && !studentCourses.isEmpty()) {
                             System.out.println("Student's courses:");
@@ -115,7 +116,7 @@ public class ConsoleMenu {
                             }
                             System.out.print("Enter course name to remove the student from: ");
                             courseName = scanner.nextLine();
-                            courseManager.removeStudentFromCourse(connection, studentId, courseName);
+                            courseManager.removeStudentFromCourse(studentId, courseName);
                         } else {
                             System.out.println("No courses found for the student.");
                         }
