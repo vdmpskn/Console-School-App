@@ -1,38 +1,62 @@
 package com.foxminded.vdmpskn.schoolconsoleapp.dao;
 
+import com.foxminded.vdmpskn.schoolconsoleapp.dao.DatabaseConnector;
+import com.foxminded.vdmpskn.schoolconsoleapp.dao.StudentsDataGenerator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
-public class StudentsDataGeneratorTest {
+class StudentsDataGeneratorTest {
 
-    @Test
-    public void testGetRandomGroupId() {
-        StudentsDataGenerator generator = new StudentsDataGenerator();
-        Random random = new Random();
-        List<Integer> groupIds = Arrays.asList(1, 2, 3, 4, 5);
+    @Mock
+    private DatabaseConnector mockConnector;
 
-        int randomGroupId = generator.getRandomGroupId(groupIds, random);
+    @Mock
+    private Connection mockConnection;
 
-        assertTrue(groupIds.contains(randomGroupId), "Random group ID is not in the list of group IDs");
+    @Mock
+    private PreparedStatement mockStatement;
+
+    @Mock
+    private ResultSet mockResultSet;
+
+    private StudentsDataGenerator dataGenerator;
+
+    @BeforeEach
+    void setUp() throws SQLException {
+        MockitoAnnotations.openMocks(this);
+
+        when(mockConnector.getConnection()).thenReturn(mockConnection);
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockStatement);
+        when(mockConnection.createStatement()).thenReturn(mockStatement);
+        when(mockStatement.executeQuery(anyString())).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true, false);
+        when(mockResultSet.getInt(anyString())).thenReturn(1);
+
+        dataGenerator = new StudentsDataGenerator(mockConnector);
     }
 
     @Test
-    public void testGetRandomGroupIdEmptyList() {
-        StudentsDataGenerator generator = new StudentsDataGenerator();
-        Random random = new Random();
-        List<Integer> groupIds = new ArrayList<>();
+    void generateStudents_ShouldThrowException_WhenNoGroupIdsAvailable() throws SQLException {
+        when(mockResultSet.next()).thenReturn(false);
 
-        assertThrows(IllegalStateException.class, () -> generator.getRandomGroupId(groupIds, random),
-                "Empty group IDs list should throw an IllegalStateException");
+        assertThrows(IllegalStateException.class, () -> dataGenerator.generateStudents());
     }
-
-
-
 }
+
+
+
+

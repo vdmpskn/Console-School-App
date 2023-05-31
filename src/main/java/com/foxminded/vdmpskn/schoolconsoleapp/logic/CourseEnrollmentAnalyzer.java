@@ -7,10 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CourseEnrollmentAnalyzer {
+    private final DatabaseConnector connector;
+
+    public CourseEnrollmentAnalyzer(DatabaseConnector connector) {
+        this.connector = connector;
+    }
 
     public List<String> findStudentsByCourseName(String courseName) {
         List<String> students = new ArrayList<>();
-        DatabaseConnector connector = new DatabaseConnector();
+
 
         String query = "SELECT s.first_name, s.last_name " +
                 "FROM students s " +

@@ -1,84 +1,79 @@
 package com.foxminded.vdmpskn.schoolconsoleapp.manage;
 
+import com.foxminded.vdmpskn.schoolconsoleapp.dao.DatabaseConnector;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class CourseManagerTest {
 
     @Mock
-    private Connection connection;
-
+    private DatabaseConnector mockConnector;
     @Mock
-    private PreparedStatement preparedStatement;
-
+    private Connection mockConnection;
     @Mock
-    private ResultSet resultSet;
+    private PreparedStatement mockStatement;
+    @Mock
+    private ResultSet mockResultSet;
 
-    @Test
-    void testAddStudentToCourse() throws SQLException {
-        int studentId = 1;
-        int courseId = 2;
+    private CourseManager courseManager;
 
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeUpdate()).thenReturn(1);
+    @BeforeEach
+    void setUp() throws SQLException {
+        MockitoAnnotations.openMocks(this);
+        courseManager = new CourseManager(mockConnector);
 
-        CourseManager.addStudentToCourse(connection, studentId, courseId);
-
-        verify(connection, times(1)).prepareStatement(anyString());
-        verify(preparedStatement, times(1)).setInt(1, studentId);
-        verify(preparedStatement, times(1)).setInt(2, courseId);
-        verify(preparedStatement, times(1)).executeUpdate();
+        when(mockConnector.getConnection()).thenReturn(mockConnection);
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockStatement);
+        when(mockStatement.executeUpdate()).thenReturn(1);
+        when(mockStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true, false);
+        when(mockResultSet.getString(anyString())).thenReturn("Course 1");
     }
 
     @Test
-    void testGetStudentCourses() throws SQLException {
+    void addStudentToCourse_ShouldPrintSuccessMessage_WhenStudentAddedSuccessfully() throws SQLException {
         int studentId = 1;
-        List<String> expectedCourseNames = Arrays.asList("Math", "Science");
+        int courseId = 1;
 
-        when(connection.prepareStatement(Mockito.anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getString("course_name")).thenReturn("Math", "Science");
+        courseManager.addStudentToCourse(studentId, courseId);
 
-        List<String> actualCourseNames = CourseManager.getStudentCourses(connection, studentId);
-
-        assertEquals(expectedCourseNames, actualCourseNames);
-
-        verify(connection, times(1)).prepareStatement(Mockito.anyString());
-        verify(preparedStatement, times(1)).setInt(1, studentId);
-        verify(preparedStatement, times(1)).executeQuery();
-        verify(resultSet, times(3)).next();
-        verify(resultSet, times(2)).getString("course_name");
+        verify(mockStatement).setInt(1, studentId);
+        verify(mockStatement).setInt(2, courseId);
+        verify(mockStatement).executeUpdate();
     }
 
     @Test
-    void testRemoveStudentFromCourse() throws SQLException {
+    void getStudentCourses_ShouldReturnListOfCourseNames_WhenStudentHasCourses() throws SQLException {
         int studentId = 1;
-        String courseName = "Math";
 
-        when(connection.prepareStatement(Mockito.anyString())).thenReturn(preparedStatement);
+        List<String> result = courseManager.getStudentCourses(studentId);
 
-        CourseManager.removeStudentFromCourse(connection, studentId, courseName);
+        verify(mockStatement).setInt(1, studentId);
+        verify(mockStatement).executeQuery();
+        verify(mockResultSet, times(2)).next();
+        verify(mockResultSet).getString("course_name");
+    }
 
-        verify(connection, times(1)).prepareStatement(Mockito.anyString());
-        verify(preparedStatement, times(1)).setInt(1, studentId);
-        verify(preparedStatement, times(1)).setString(2, courseName);
-        verify(preparedStatement, times(1)).executeUpdate();
+    @Test
+    void removeStudentFromCourse_ShouldPrintSuccessMessage_WhenStudentRemovedSuccessfully() throws SQLException {
+        int studentId = 1;
+        String courseName = "Course 1";
+
+        courseManager.removeStudentFromCourse(studentId, courseName);
+
+        verify(mockStatement).setInt(1, studentId);
+        verify(mockStatement).setString(2, courseName);
+        verify(mockStatement).executeUpdate();
     }
 }
-

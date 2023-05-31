@@ -1,48 +1,58 @@
 package com.foxminded.vdmpskn.schoolconsoleapp.manage;
 
-import static org.mockito.Mockito.*;
+import com.foxminded.vdmpskn.schoolconsoleapp.dao.DatabaseConnector;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import org.junit.jupiter.api.Test;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 class StudentManagerTest {
 
-    @Test
-    void testAddNewStudent() throws SQLException {
-        Connection connection = mock(Connection.class);
-        PreparedStatement statement = mock(PreparedStatement.class);
+    @Mock
+    private DatabaseConnector mockConnector;
+    @Mock
+    private Connection mockConnection;
+    @Mock
+    private PreparedStatement mockStatement;
 
-        when(connection.prepareStatement(anyString())).thenReturn(statement);
-        when(statement.executeUpdate()).thenReturn(1);
+    private StudentManager studentManager;
 
-        StudentManager.addNewStudent(connection, "John", "Doe");
+    @BeforeEach
+    void setUp() throws SQLException {
+        MockitoAnnotations.openMocks(this);
+        studentManager = new StudentManager(mockConnector);
 
-        verify(connection).prepareStatement(anyString());
-        verify(statement).setString(1, "John");
-        verify(statement).setString(2, "Doe");
-        verify(statement).executeUpdate();
+        when(mockConnector.getConnection()).thenReturn(mockConnection);
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockStatement);
+        when(mockStatement.executeUpdate()).thenReturn(1);
     }
 
     @Test
-    void testDeleteStudent() throws SQLException {
-        Connection connection = mock(Connection.class);
-        PreparedStatement deleteStudentCoursesStatement = mock(PreparedStatement.class);
-        PreparedStatement deleteStudentStatement = mock(PreparedStatement.class);
+    void addNewStudent_ShouldPrintSuccessMessage_WhenStudentAddedSuccessfully() throws SQLException {
+        String firstName = "John";
+        String lastName = "Doe";
 
-        when(connection.prepareStatement(anyString()))
-                .thenReturn(deleteStudentCoursesStatement)
-                .thenReturn(deleteStudentStatement);
-        when(deleteStudentCoursesStatement.executeUpdate()).thenReturn(1);
-        when(deleteStudentStatement.executeUpdate()).thenReturn(1);
+        studentManager.addNewStudent(firstName, lastName);
 
-        StudentManager.deleteStudent(connection, 123);
+        verify(mockStatement).setString(1, firstName);
+        verify(mockStatement).setString(2, lastName);
+        verify(mockStatement).executeUpdate();
+    }
 
-        verify(connection, times(2)).prepareStatement(anyString());
-        verify(deleteStudentCoursesStatement).setInt(anyInt(), anyInt());
-        verify(deleteStudentCoursesStatement).executeUpdate();
-        verify(deleteStudentStatement).setInt(anyInt(), anyInt());
-        verify(deleteStudentStatement).executeUpdate();
+    @Test
+    void deleteStudent_ShouldPrintSuccessMessage_WhenStudentDeletedSuccessfully() throws SQLException {
+        int studentId = 1;
+
+        studentManager.deleteStudent(studentId);
+
+        verify(mockStatement, times(2)).setInt(1, studentId);
+        verify(mockStatement, times(2)).executeUpdate();
     }
 }

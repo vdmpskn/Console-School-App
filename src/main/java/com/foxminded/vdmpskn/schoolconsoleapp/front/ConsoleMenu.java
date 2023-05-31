@@ -51,7 +51,7 @@ public class ConsoleMenu {
                     case 2:
                         System.out.print("Enter course name: ");
                         String courseName = scanner.nextLine();
-                        CourseEnrollmentAnalyzer  courseEnrollmentAnalyzer = new CourseEnrollmentAnalyzer();
+                        CourseEnrollmentAnalyzer  courseEnrollmentAnalyzer = new CourseEnrollmentAnalyzer(connector);
                         List<String> students = courseEnrollmentAnalyzer.findStudentsByCourseName(courseName);
                         if (!students.isEmpty()) {
                             System.out.println("Students related to the course: " + courseName);

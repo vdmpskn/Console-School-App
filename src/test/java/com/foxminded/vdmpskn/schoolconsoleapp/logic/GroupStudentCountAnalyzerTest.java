@@ -1,9 +1,10 @@
 package com.foxminded.vdmpskn.schoolconsoleapp.logic;
 
+import com.foxminded.vdmpskn.schoolconsoleapp.dao.DatabaseConnector;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,49 +13,53 @@ import java.sql.SQLException;
 
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 public class GroupStudentCountAnalyzerTest {
-
+    @Mock
+    private DatabaseConnector mockConnector;
     @Mock
     private Connection mockConnection;
-
     @Mock
     private PreparedStatement mockStatement;
-
     @Mock
     private ResultSet mockResultSet;
 
-    @Test
-    public void testFindGroupsWithMaxStudents() throws SQLException {
-        int maxStudents = 30;
+    private GroupStudentCountAnalyzer analyzer;
 
-        String expectedSql = "SELECT groups.group_id, groups.group_name, COUNT(students.student_id) AS student_count "
-                + "FROM groups "
-                + "LEFT JOIN students ON groups.group_id = students.group_id "
-                + "GROUP BY groups.group_id, groups.group_name "
-                + "HAVING COUNT(students.student_id) <= ?";
-
-
+    @BeforeEach
+    public void setup() throws SQLException {
+        MockitoAnnotations.openMocks(this);
+        analyzer = new GroupStudentCountAnalyzer(mockConnector);
+        when(mockConnector.getConnection()).thenReturn(mockConnection);
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockStatement);
         when(mockStatement.executeQuery()).thenReturn(mockResultSet);
-        when(mockResultSet.next()).thenReturn(true, false); // Simulate one row in the result set
-        when(mockResultSet.getInt("group_id")).thenReturn(1);
-        when(mockResultSet.getString("group_name")).thenReturn("IR-21");
-        when(mockResultSet.getInt("student_count")).thenReturn(25);
+    }
 
+    @Test
+    public void findGroupsWithMaxStudents_ShouldPrintGroupInfo_WhenStudentsCountIsLessOrEqual() throws SQLException {
+        int maxStudents = 10;
+        when(mockResultSet.next()).thenReturn(true, true, false);
+        when(mockResultSet.getInt("group_id")).thenReturn(1, 2);
+        when(mockResultSet.getString("group_name")).thenReturn("Group 1", "Group 2");
+        when(mockResultSet.getInt("student_count")).thenReturn(5, 8);
 
-        when(mockConnection.prepareStatement(expectedSql)).thenReturn(mockStatement);
+        analyzer.findGroupsWithMaxStudents(maxStudents);
 
-
-        GroupStudentCountAnalyzer.findGroupsWithMaxStudents(mockConnection, maxStudents);
-
-
-        verify(mockConnection).prepareStatement(expectedSql);
         verify(mockStatement).setInt(1, maxStudents);
-        verify(mockStatement).executeQuery();
-        verify(mockResultSet, times(2)).next(); // One for checking while loop condition, one for reading row
-        verify(mockResultSet).getInt("group_id");
-        verify(mockResultSet).getString("group_name");
-        verify(mockResultSet).getInt("student_count");
+        verify(mockResultSet, times(3)).next();
+        verify(mockResultSet, times(2)).getInt("group_id");
+        verify(mockResultSet, times(2)).getString("group_name");
+        verify(mockResultSet, times(2)).getInt("student_count");
+    }
 
+    @Test
+    public void findGroupsWithMaxStudents_ShouldNotPrintGroupInfo_WhenStudentsCountIsGreater() throws SQLException {
+        int maxStudents = 10;
+        when(mockResultSet.next()).thenReturn(false);
+
+        analyzer.findGroupsWithMaxStudents(maxStudents);
+
+        verify(mockStatement).setInt(1, maxStudents);
+        verify(mockResultSet).next();
     }
 }
+

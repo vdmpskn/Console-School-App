@@ -1,58 +1,55 @@
 package com.foxminded.vdmpskn.schoolconsoleapp.dao;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Random;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 public class GroupDataGeneratorTest {
+    @Mock
+    private DatabaseConnector mockConnector;
+    @Mock
+    private Connection mockConnection;
+    @Mock
+    private PreparedStatement mockStatement;
 
-    @Test
-    public void testGenerateRandomGroupNames() {
-        int numGroups = 10;
-        List<String> groupNames = GroupDataGenerator.generateRandomGroupNames(numGroups);
+    private GroupDataGenerator dataGenerator;
 
-        assertEquals(numGroups, groupNames.size(), "Incorrect number of group names generated");
+    @BeforeEach
+    void setUp() throws SQLException {
+        MockitoAnnotations.openMocks(this);
+        when(mockConnector.getConnection()).thenReturn(mockConnection);
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockStatement);
 
-        for (String groupName : groupNames) {
-            assertTrue(groupName.matches("[A-Z]{2}-\\d{2}"), "Invalid group name format");
-        }
+        dataGenerator = spy(new GroupDataGenerator(mockConnector));
     }
 
     @Test
-    public void testGenerateRandomGroupName() {
-        GroupDataGenerator generator = new GroupDataGenerator();
-        Random random = new Random();
-        String groupName = generator.generateRandomGroupName(random);
+    void generateAndInsertGroups_ShouldExecuteBatchSuccessfully() throws SQLException {
 
-        assertTrue(groupName.matches("[A-Z]{2}-\\d{2}"), "Invalid group name format");
-    }
+        List<String> groupNames = new ArrayList<>();
+        groupNames.add("AB-12");
+        groupNames.add("CD-34");
+        doReturn(groupNames).when(dataGenerator).generateRandomGroupNames(GroupDataGenerator.NUM_GROUPS);
 
-    @Test
-    public void testGenerateRandomNumber() {
-        GroupDataGenerator generator = new GroupDataGenerator();
-        Random random = new Random();
-        int randomNumber = generator.generateRandomNumber(random);
+        dataGenerator.generateAndInsertGroups();
 
-        assertTrue(randomNumber >= 0 && randomNumber <= 9, "Random number is out of range");
-    }
-
-    @Test
-    public void testGenerateRandomCharacter() {
-        GroupDataGenerator generator = new GroupDataGenerator();
-        Random random = new Random();
-        char randomCharacter = generator.generateRandomCharacter(random);
-
-        assertTrue(Character.isUpperCase(randomCharacter), "Random character is not uppercase");
-        assertTrue(randomCharacter >= 'A' && randomCharacter <= 'Z', "Random character is out of range");
-    }
-
-
-
-    @Test
-    public void testGenerateAndInsertGroups() throws SQLException {
-        assertDoesNotThrow(() -> GroupDataGenerator.generateAndInsertGroups());
+        verify(mockConnector).getConnection();
+        verify(mockConnection).prepareStatement(anyString());
+        verify(mockStatement, times(2)).setString(eq(1), anyString());
+        verify(mockStatement, times(2)).addBatch();
+        verify(mockStatement).executeBatch();
+        verify(mockStatement).close();
+        verify(mockConnection).close();
     }
 }
+

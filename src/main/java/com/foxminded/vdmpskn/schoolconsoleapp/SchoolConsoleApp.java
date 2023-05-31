@@ -18,7 +18,6 @@ public class SchoolConsoleApp {
         this.connector = connector;
     }
 
-
     public static void main(String[] args) throws SQLException {
 
         log.info("Connected to the database");

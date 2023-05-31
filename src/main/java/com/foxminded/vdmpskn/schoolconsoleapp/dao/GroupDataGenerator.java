@@ -11,7 +11,7 @@ import java.util.Random;
 import org.apache.commons.logging.Log;
 
 public class GroupDataGenerator {
-    private static final int NUM_GROUPS = 10;
+    public static final int NUM_GROUPS = 10;
     private static final Log log = LogFactory.getLog(GroupDataGenerator.class);
 
     private final DatabaseConnector connector;
