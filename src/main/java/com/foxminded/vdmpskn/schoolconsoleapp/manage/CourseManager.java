@@ -7,15 +7,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.foxminded.vdmpskn.schoolconsoleapp.dao.DatabaseConnector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class CourseManager {
     public static final Log log = LogFactory.getLog(CourseManager.class);
 
-    public static void addStudentToCourse(Connection connection, int studentId, int courseId) throws SQLException {
+    private final DatabaseConnector connector;
+
+    public CourseManager(DatabaseConnector connector) {
+        this.connector = connector;
+    }
+
+    public void addStudentToCourse(int studentId, int courseId) throws SQLException {
         String addStudentToCourseQuery = "INSERT INTO student_courses (student_id, course_id) VALUES (?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(addStudentToCourseQuery)) {
+        try (Connection connection = connector.getConnection();
+             PreparedStatement statement = connection.prepareStatement(addStudentToCourseQuery)) {
             statement.setInt(1, studentId);
             statement.setInt(2, courseId);
             int rowsAffected = statement.executeUpdate();
@@ -27,7 +35,7 @@ public class CourseManager {
         }
     }
 
-    public static List<String> getStudentCourses(Connection connection, int studentId) throws SQLException {
+    public List<String> getStudentCourses(int studentId) throws SQLException {
         List<String> courseNames = new ArrayList<>();
 
         String sql = "SELECT c.course_name " +
@@ -35,7 +43,8 @@ public class CourseManager {
                 "JOIN student_courses sc ON c.course_id = sc.course_id " +
                 "WHERE sc.student_id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = connector.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, studentId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
@@ -48,11 +57,12 @@ public class CourseManager {
         return courseNames;
     }
 
-    public static void removeStudentFromCourse(Connection connection, int studentId, String courseName) throws SQLException {
+    public void removeStudentFromCourse(int studentId, String courseName) throws SQLException {
         String sql = "DELETE FROM student_courses " +
                 "WHERE student_id = ? AND course_id IN (SELECT course_id FROM courses WHERE course_name = ?)";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = connector.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, studentId);
             statement.setString(2, courseName);
             statement.executeUpdate();

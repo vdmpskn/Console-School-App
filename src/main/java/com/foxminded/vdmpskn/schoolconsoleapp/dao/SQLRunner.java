@@ -14,10 +14,14 @@ import org.apache.commons.logging.LogFactory;
 
 public class SQLRunner {
     private static final Log log = LogFactory.getLog(SQLRunner.class);
-    static DatabaseConnector connector = new DatabaseConnector();
 
+    private final DatabaseConnector connector;
 
-    public static void runTableCreationScript(String TABLES_SCRIPT_FILE) throws SQLException {
+    public SQLRunner(DatabaseConnector connector) {
+        this.connector = connector;
+    }
+
+    public void runTableCreationScript(String TABLES_SCRIPT_FILE) throws SQLException {
         boolean tablesExist = checkTablesExist();
         if (tablesExist) {
             dropTables();
@@ -29,12 +33,12 @@ public class SQLRunner {
         log.info("Table creation script executed successfully.");
     }
 
-    public static boolean checkTablesExist() throws SQLException {
-        Connection connection = connector.getConnection();
+    public boolean checkTablesExist() throws SQLException {
+
         String query = "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'groups')";
         Statement statement = null;
         ResultSet resultSet = null;
-        try {
+        try(Connection connection = connector.getConnection();) {
             statement = connection.createStatement();
             resultSet = statement.executeQuery(query);
             if (resultSet.next()) {
@@ -59,10 +63,9 @@ public class SQLRunner {
         return false;
     }
 
-    public static void dropTables() throws SQLException {
+    public void dropTables() throws SQLException {
         Statement statement = null;
-        Connection connection = connector.getConnection();
-        try {
+        try(Connection connection = connector.getConnection();) {
             statement = connection.createStatement();
             statement.executeUpdate("DROP TABLE IF EXISTS students CASCADE");
             statement.executeUpdate("DROP TABLE IF EXISTS courses CASCADE");
@@ -79,7 +82,7 @@ public class SQLRunner {
         }
     }
 
-    public static String readScriptFile(String fileName) {
+    public String readScriptFile(String fileName) {
         StringBuilder script = new StringBuilder();
         BufferedReader reader = null;
         try {
@@ -103,10 +106,9 @@ public class SQLRunner {
         return script.toString();
     }
 
-    public static void executeScript(String script) throws SQLException {
-        Connection connection = connector.getConnection();
+    public void executeScript(String script) throws SQLException {
         Statement statement = null;
-        try {
+        try(Connection connection = connector.getConnection();) {
             statement = connection.createStatement();
             statement.executeUpdate(script);
         } finally {

@@ -10,20 +10,25 @@ import org.apache.commons.logging.LogFactory;
 
 public class StudentsDataGenerator {
     private static final Log log = LogFactory.getLog(StudentsDataGenerator.class);
-    static DatabaseConnector connector = new DatabaseConnector();
 
-    public static final String[] FIRST_NAMES = {"John", "Emma", "Michael", "Sophia", "William", "Olivia", "James", "Ava", "Oliver", "Isabella",
+    private final DatabaseConnector connector;
+
+    public StudentsDataGenerator(DatabaseConnector connector) {
+        this.connector = connector;
+    }
+
+    public final String[] FIRST_NAMES = {"John", "Emma", "Michael", "Sophia", "William", "Olivia", "James", "Ava", "Oliver", "Isabella",
             "Benjamin", "Mia", "Lucas", "Charlotte", "Henry", "Amelia", "Alexander", "Harper", "Daniel", "Evelyn"};
-    public static final String[] LAST_NAMES = {"Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor",
+    public final String[] LAST_NAMES = {"Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor",
             "Anderson", "Thomas", "Jackson", "White", "Harris", "Martin", "Thompson", "Garcia", "Martinez", "Clark"};
 
-    public static void generateStudents() throws SQLException {
+    public void generateStudents() throws SQLException {
 
         String sql = "INSERT INTO students (group_id, first_name, last_name) VALUES (?, ?, ?)";
         Random random = new Random();
-        Connection connection = connector.getConnection();
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = connector.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             List<Integer> groupIds = getGroupIds();
 
             if (groupIds.isEmpty()) {
@@ -47,12 +52,12 @@ public class StudentsDataGenerator {
         }
     }
 
-    public static List<Integer> getGroupIds() throws SQLException {
+    public List<Integer> getGroupIds() throws SQLException {
         List<Integer> groupIds = new ArrayList<>();
-        Connection connection = connector.getConnection();
 
         String sql = "SELECT group_id FROM groups";
-        try (Statement statement = connection.createStatement();
+        try (Connection connection = connector.getConnection();
+             Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             while (resultSet.next()) {
                 int groupId = resultSet.getInt("group_id");
@@ -63,7 +68,7 @@ public class StudentsDataGenerator {
         return groupIds;
     }
 
-    public static int getRandomGroupId(List<Integer> groupIds, Random random) {
+    public int getRandomGroupId(List<Integer> groupIds, Random random) {
         if (groupIds.isEmpty()) {
             log.fatal("No group IDs available");
             throw new IllegalStateException();

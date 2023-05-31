@@ -12,11 +12,15 @@ import org.apache.commons.logging.LogFactory;
 public class StudentsToCourseAssigner {
     public static final Log log = LogFactory.getLog(StudentsToCourseAssigner.class);
 
-    public static void assignCoursesToStudents() {
-        DatabaseConnector connector = new DatabaseConnector();
+    private final DatabaseConnector connector;
 
-        try {
-            Connection connection = connector.getConnection();
+    public StudentsToCourseAssigner(DatabaseConnector connector) {
+        this.connector = connector;
+    }
+
+    public void assignCoursesToStudents() {
+
+        try(Connection connection = connector.getConnection()) {
             Random random = new Random();
 
             String selectStudentsSQL = "SELECT student_id FROM students";

@@ -13,10 +13,14 @@ import org.apache.commons.logging.Log;
 public class GroupDataGenerator {
     private static final int NUM_GROUPS = 10;
     private static final Log log = LogFactory.getLog(GroupDataGenerator.class);
-    static DatabaseConnector connector = new DatabaseConnector();
 
+    private final DatabaseConnector connector;
 
-    public static void generateAndInsertGroups() throws SQLException {
+    public GroupDataGenerator(DatabaseConnector connector) {
+        this.connector = connector;
+    }
+
+    public void generateAndInsertGroups() throws SQLException {
         try {
             generateRandom();
         } catch (SQLException e) {
@@ -24,12 +28,12 @@ public class GroupDataGenerator {
         }
     }
 
-    public static void generateRandom() throws SQLException {
+    public void generateRandom() throws SQLException {
         List<String> groupNames = generateRandomGroupNames(NUM_GROUPS);
-        Connection connection = connector.getConnection();
-
         String sql = "INSERT INTO groups (group_name) VALUES (?)";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+        try (Connection connection = connector.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             for (String groupName : groupNames) {
                 statement.setString(1, groupName);
                 statement.addBatch();
@@ -39,7 +43,7 @@ public class GroupDataGenerator {
         }
     }
 
-    public static List<String> generateRandomGroupNames(int numGroups) {
+    public List<String> generateRandomGroupNames(int numGroups) {
         List<String> groupNames = new ArrayList<>();
         Random random = new Random();
         for (int i = 0; i < numGroups; i++) {
@@ -49,7 +53,7 @@ public class GroupDataGenerator {
         return groupNames;
     }
 
-    public static String generateRandomGroupName(Random random) {
+    public String generateRandomGroupName(Random random) {
         return String.valueOf(generateRandomCharacter(random)) +
                 generateRandomCharacter(random) +
                 "-" +
@@ -57,18 +61,17 @@ public class GroupDataGenerator {
                 generateRandomNumber(random);
     }
 
-    public static int generateRandomNumber(Random random) {
+    public int generateRandomNumber(Random random) {
         int numberStart = 0;
         int numberEnd = 9;
         return random.nextInt(numberEnd - numberStart + 1) + numberStart;
     }
 
-    public static char generateRandomCharacter(Random random) {
+    public char generateRandomCharacter(Random random) {
         int asciiStart = 65; // ASCII code for 'A'
         int asciiEnd = 90; // ASCII code for 'Z'
         int randomAscii = random.nextInt(asciiEnd - asciiStart + 1) + asciiStart;
         return (char) randomAscii;
     }
-
 
 }

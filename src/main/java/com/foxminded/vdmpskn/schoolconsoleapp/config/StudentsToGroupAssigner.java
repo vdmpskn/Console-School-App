@@ -15,13 +15,17 @@ import org.apache.commons.logging.LogFactory;
 public class StudentsToGroupAssigner {
     private static final Log log = LogFactory.getLog(StudentsToGroupAssigner.class);
 
-    public static void assignStudentsToGroups() {
-        DatabaseConnector connector = new DatabaseConnector();
+    private final DatabaseConnector connector;
 
-        try {
-            Connection connection = connector.getConnection();
-            String selectStudentsQuery = "SELECT student_id FROM students";
-            PreparedStatement selectStudentsStatement = connection.prepareStatement(selectStudentsQuery);
+    public StudentsToGroupAssigner(DatabaseConnector connector) {
+        this.connector = connector;
+    }
+
+    public void assignStudentsToGroups() {
+
+        String selectStudentsQuery = "SELECT student_id FROM students";
+        try(Connection connection = connector.getConnection();
+            PreparedStatement selectStudentsStatement = connection.prepareStatement(selectStudentsQuery)) {
             Random random = new Random();
 
             String selectGroupsQuery = "SELECT group_id FROM groups";

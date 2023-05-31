@@ -1,14 +1,23 @@
 package com.foxminded.vdmpskn.schoolconsoleapp.manage;
 
+import com.foxminded.vdmpskn.schoolconsoleapp.dao.DatabaseConnector;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class StudentManager {
 
-    public static void addNewStudent(Connection connection, String firstName, String lastName) throws SQLException {
+    private final DatabaseConnector connector;
+
+    public StudentManager(DatabaseConnector connector) {
+        this.connector = connector;
+    }
+
+    public void addNewStudent(String firstName, String lastName) throws SQLException {
         String insertStudentQuery = "INSERT INTO students (first_name, last_name) VALUES (?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(insertStudentQuery)) {
+        try (Connection connection = connector.getConnection();
+             PreparedStatement statement = connection.prepareStatement(insertStudentQuery)) {
             statement.setString(1, firstName);
             statement.setString(2, lastName);
             statement.executeUpdate();
@@ -16,8 +25,8 @@ public class StudentManager {
         }
     }
 
-    public static void deleteStudent(Connection connection, int studentId) throws SQLException {
-        try {
+    public void deleteStudent( int studentId) throws SQLException {
+        try(Connection connection = connector.getConnection();) {
 
             String deleteStudentCoursesQuery = "DELETE FROM student_courses WHERE student_id = ?";
             PreparedStatement deleteStudentCoursesStatement = connection.prepareStatement(deleteStudentCoursesQuery);

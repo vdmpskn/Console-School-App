@@ -8,10 +8,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class CoursesDataGenerator {
-    static DatabaseConnector connector = new DatabaseConnector();
+
+    private final DatabaseConnector connector;
+
+    public CoursesDataGenerator(DatabaseConnector connector) {
+        this.connector = connector;
+    }
+
     private static final Log log = LogFactory.getLog(CoursesDataGenerator.class);
 
-    public static void createCourse() throws SQLException {
+    public void createCourse() throws SQLException {
         try {
             addCourses();
         } catch (SQLException e) {
@@ -19,13 +25,13 @@ public class CoursesDataGenerator {
         }
     }
 
-    public static void addCourses() throws SQLException {
+    public void addCourses() throws SQLException {
         String sql = "INSERT INTO courses (course_name, course_description) SELECT ?, ? " +
                 "WHERE NOT EXISTS (SELECT 1 FROM courses WHERE course_name = ?)";
 
-        Connection connection = connector.getConnection();
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = connector.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, "Math");
             statement.setString(2, "Mathematics course");
             statement.setString(3, "Math");
@@ -83,13 +89,13 @@ public class CoursesDataGenerator {
         }
     }
 
-    public static List<String> getAllCourseNames() throws SQLException {
-        Connection connection = connector.getConnection();
+    public List<String> getAllCourseNames() throws SQLException {
         List<String> courseNames = new ArrayList<>();
 
         String sql = "SELECT course_name FROM courses";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = connector.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
@@ -103,6 +109,5 @@ public class CoursesDataGenerator {
         log.info("Retrieved course names: " + courseNames);
         return courseNames;
     }
-
 
 }
