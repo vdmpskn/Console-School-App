@@ -49,6 +49,8 @@ public class StudentsDataGenerator {
 
             statement.executeBatch();
             log.info("Students generated successfully.");
+        } catch (SQLException  e){
+            e.printStackTrace();
         }
     }
 
@@ -63,6 +65,8 @@ public class StudentsDataGenerator {
                 int groupId = resultSet.getInt("group_id");
                 groupIds.add(groupId);
             }
+        } catch (SQLException  e){
+            e.printStackTrace();
         }
 
         return groupIds;

@@ -23,9 +23,10 @@ public class GroupStudentCountAnalyzer {
                 + "HAVING COUNT(students.student_id) <= ?";
 
         try (Connection connection = connector.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet resultSet = statement.executeQuery()) {
-             statement.setInt(1, maxStudents);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, maxStudents);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
                 System.out.println("Groups with less or equal students' number:");
                 while (resultSet.next()) {
                     int groupId = resultSet.getInt("group_id");
@@ -37,6 +38,8 @@ public class GroupStudentCountAnalyzer {
                     System.out.println("Student Count: " + studentCount);
                     System.out.println();
                 }
+            }
         }
     }
+
 }

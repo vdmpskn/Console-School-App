@@ -24,14 +24,14 @@ public class CourseEnrollmentAnalyzer {
                 "WHERE c.course_name = ?";
 
         try (Connection connection = connector.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet resultSet = statement.executeQuery()) {
-
+             PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, courseName);
-            while (resultSet.next()) {
-                String firstName = resultSet.getString("first_name");
-                String lastName = resultSet.getString("last_name");
-                students.add(firstName + " " + lastName);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    String firstName = resultSet.getString("first_name");
+                    String lastName = resultSet.getString("last_name");
+                    students.add(firstName + " " + lastName);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

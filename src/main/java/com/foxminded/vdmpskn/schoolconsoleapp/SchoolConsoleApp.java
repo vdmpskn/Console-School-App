@@ -4,13 +4,15 @@ import com.foxminded.vdmpskn.schoolconsoleapp.config.StudentsToCourseAssigner;
 import com.foxminded.vdmpskn.schoolconsoleapp.config.StudentsToGroupAssigner;
 import com.foxminded.vdmpskn.schoolconsoleapp.dao.*;
 import com.foxminded.vdmpskn.schoolconsoleapp.front.ConsoleMenu;
+import com.foxminded.vdmpskn.schoolconsoleapp.logic.GroupStudentCountAnalyzer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.sql.*;
+import java.util.Scanner;
 
 public class SchoolConsoleApp {
-    private static final String TABLES_SCRIPT_FILE = "src/main/resources/create_tables.sql";
+    private static final String tableScriptFile = "src/main/resources/create_tables.sql";
     private static final Log log = LogFactory.getLog(SchoolConsoleApp.class);
     private static DatabaseConnector connector = new DatabaseConnector();
 
@@ -22,8 +24,8 @@ public class SchoolConsoleApp {
 
         log.info("Connected to the database");
 
-        SQLRunner sqlRunner = new SQLRunner(connector);
-        sqlRunner.runTableCreationScript(TABLES_SCRIPT_FILE);//SQL script with table creation from previously created files
+       SQLRunner sqlRunner = new SQLRunner(connector);
+       sqlRunner.runTableCreationScript(tableScriptFile);//SQL script with table creation from previously created files
 
         GroupDataGenerator groupDataGenerator = new GroupDataGenerator(connector);
         groupDataGenerator.generateAndInsertGroups(); //10 groups with randomly generated names.
