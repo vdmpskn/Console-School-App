@@ -106,7 +106,7 @@ public class CoursesDataGenerator {
             log.error("Failed to retrieve course names: " + e.getMessage());
         }
 
-        log.info("Retrieved course names: " + courseNames);
+        System.out.println("Retrieved course names: ");
         return courseNames;
     }
 
