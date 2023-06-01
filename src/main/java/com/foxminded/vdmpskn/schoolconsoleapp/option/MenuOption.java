@@ -1,4 +1,4 @@
-package com.foxminded.vdmpskn.schoolconsoleapp.front;
+package com.foxminded.vdmpskn.schoolconsoleapp.option;
 
 import java.sql.SQLException;
 

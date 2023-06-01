@@ -1,6 +1,5 @@
 package com.foxminded.vdmpskn.schoolconsoleapp.option;
 
-import com.foxminded.vdmpskn.schoolconsoleapp.front.MenuOption;
 import com.foxminded.vdmpskn.schoolconsoleapp.logic.GroupStudentCountAnalyzer;
 
 import java.sql.SQLException;

@@ -1,9 +1,7 @@
 package com.foxminded.vdmpskn.schoolconsoleapp.option;
 
-import com.foxminded.vdmpskn.schoolconsoleapp.front.MenuOption;
 import com.foxminded.vdmpskn.schoolconsoleapp.logic.CourseEnrollmentAnalyzer;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 

@@ -1,7 +1,6 @@
 package com.foxminded.vdmpskn.schoolconsoleapp.option;
 
 import com.foxminded.vdmpskn.schoolconsoleapp.dao.CoursesDataGenerator;
-import com.foxminded.vdmpskn.schoolconsoleapp.front.MenuOption;
 import com.foxminded.vdmpskn.schoolconsoleapp.manage.CourseManager;
 import com.foxminded.vdmpskn.schoolconsoleapp.manage.StudentManager;
 
